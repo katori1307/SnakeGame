@@ -36,9 +36,9 @@ const int left_score_board = right_board + 1;
 const int right_score_board = 119;
 
 
-//const char* SnakeHead = "\xE2\x98\x85";
-//const char* SnakeBody = "\xE2\x96\x88";
-//const char* Food = "\xE2\x98\xBC";
+const char* SnakeHead = u8"\u2593";
+const char* SnakeBody = u8"\u2588";
+const char* Food = u8"\u25BC";
 
 
 enum class Direction
@@ -54,6 +54,10 @@ class SnakeSegment
 protected:
 	int x, y;
 public:
+	int getX();
+	int getY();
+	void setX(int x);
+	void setY(int y);
 	SnakeSegment();
 	SnakeSegment(int xPos, int yPos);
 };
@@ -69,7 +73,7 @@ class Game
 {
 private:
 	std::vector<SnakeSegment> snake;
-	//SnakeSegment food;
+	Food food;
 	Direction currentDirection;
 	Direction nextDirection;
 	bool isOver;
@@ -86,6 +90,9 @@ public:
 	void generateFood();
 	void gotoXY(int x, int y);
 	void textColor(int color);
+	void render();
+	void drawObject();
+
 
 
 };
