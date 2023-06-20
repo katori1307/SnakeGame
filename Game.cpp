@@ -15,16 +15,40 @@ Game::Game()
 	this->endGame = false;
 	// create food;
 	this->food.generateFood();
-	// draw object
-	drawObject();
+	//// draw object
+	//drawObject();
 	// initial state of movement.
 	currentDirection = Direction::Up;
 	nextDirection = Direction::Up;
+	// score
+	score = 0;
+	// initial title and choices
+	title.push_back(",------.   ,---.  ,--.  ,--.     ,---.    ,---.  ,--.  ,--.    ,--.   ,--. ,-----. ,--. ");
+	title.push_back("|  .--. ' /  O  \\ |  ,'.|  |    '   .-'  /  O  \\ |  ,'.|  |    |   `.'   |'  .-.  '|  | ");
+	title.push_back("|  '--'.'|  .-.  ||  |' '  |    `.  `-. |  .-.  ||  |' '  |    |  |'.'|  ||  | |  ||  | ");
+	title.push_back("|  |\\  \\ |  | |  ||  | `   |    .-'    ||  | |  ||  | `   |    |  |   |  |'  '-'  '|  | ");
+	title.push_back("`--' '--'`--' `--'`--'  `--'    `-----' `--' `--'`--'  `--'    `--'   `--' `-----' `--' ");
 
+	choice.push_back("1. New game");
+	choice.push_back("2. Load game");
+	choice.push_back("3. Settings");
+	choice.push_back("4. About me");
+	choice.push_back("5. Exit");
+
+	high_score.push_back("  ____   ____ ___  ____  _____ ");
+	high_score.push_back(" / ___| / ___/ _ \\|  _ \\| ____|");
+	high_score.push_back(" \\___ \\| |  | | | | |_) |  _|  ");
+	high_score.push_back("  ___) | |__| |_| |  _ <| |___ ");
+	high_score.push_back(" |____/ \\____\\___/|_| \\_\\_____|");
+
+
+	line = 0;
 }
 
 void Game::run()
 {
+	system("cls");
+	drawObject();
 	drawBoard();
 	while (!isOver)
 	{
@@ -35,12 +59,13 @@ void Game::run()
 		// 3: draw objects in game
 		render();
 		// 4: sleep (game's speed)
-		Sleep(200);
+		Sleep(Speed);
 	}
 }
 
 void Game::drawBoard()
 {
+	// draw game board
 	for (int i = left_board; i < right_board; i++)
 	{
 		gotoXY(i, top_board);
@@ -68,6 +93,14 @@ void Game::drawBoard()
 		cout << "|";
 		gotoXY(right_score_board, i);
 		cout << "|";
+	}
+
+	// draw high score menu
+	int x = left_score_board + ((right_score_board - left_score_board - high_score[0].size()) / 2);
+	for (int i = 0; i < high_score.size(); i++)
+	{
+		gotoXY(x, 3 + i);
+		cout << high_score[i];
 	}
 }
 
@@ -163,6 +196,7 @@ void Game::checkCollision()
 	if (X == this->food.getX() && Y == this->food.getY())
 	{
 		snake.emplace_back(SnakeSegment(food.getX(), food.getY()));
+		this->score += 100;
 		this->food.generateFood();
 	}
 }
@@ -218,12 +252,101 @@ void Game::hideCursor()
 
 void Game::launch()
 {
-	vector<string> title;
-	
-	
+	initializeObject();
+	while (!endGame)
+	{
+		
+		int xChoice = (consoleWidth - choice[0].size()) / 2;
+		int input = toupper(_getch());
+		switch (input)
+		{
+		case 'W':
+			gotoXY(xChoice, line + 15);
+			textColor(DEFAULT);
+			cout << choice[line];
+
+			if (line == 0) line = 4;
+			else line--;
+
+			gotoXY(xChoice, line + 15);
+			textColor(LIGHT_RED);
+			cout << choice[line];
+			break;
+
+		case 'S':
+			gotoXY(xChoice, line + 15);
+			textColor(DEFAULT);
+			cout << choice[line];
+
+			if (line == 4) line = 0;
+			else line++;
+
+			gotoXY(xChoice, line + 15);
+			textColor(LIGHT_RED);
+			cout << choice[line];
+			break;
+		case 'E':
+			switch (line)
+			{
+			case 0: // new game
+				run();
+				break;
+
+			case 4:
+				endGame = true;
+				break;
+			}
+		}
+		if (isOver)
+		{
+			system("cls");
+			initializeObject();
+			continue;
+		}	
+	}	
+}
+
+void Game::drawMenu()
+{
+	textColor(YELLOW);
 	// print title
-	gotoXY(0, 0);
 	for (int i = 0; i < title.size(); i++)
-		cout << title[i] << endl;
+	{
+		gotoXY((consoleWidth - title[0].size()) / 2, 5 + i);
+		cout << title[i];
+	}
+	textColor(DEFAULT);
+	for (int i = 0; i < choice.size(); i++)
+	{
+		gotoXY((consoleWidth - choice[0].size()) / 2, 15 + i);
+		cout << choice[i];
+	}
+	gotoXY((consoleWidth - choice[0].size()) / 2, 25);
+	cout << "Press E to interact";
+	gotoXY((consoleWidth - choice[0].size()) / 2, 26);
+	cout << "W, S to move";
 	
+}
+
+void Game::initializeObject()
+{
+	isOver = false;
+	line = 0;
+	drawMenu();
+	textColor(LIGHT_RED);
+	gotoXY((consoleWidth - choice[0].size()) / 2, 15);
+	cout << choice[0];
+	snake.clear();
+	// initialize snake size
+	snake.reserve(initialSize);
+	// create snake;
+	for (int i = 0; i < initialSize; i++)
+		snake.emplace_back(SnakeSegment(right_board / 2, (bottom_board / 2) + i));
+	// create food;
+	this->food.generateFood();
+	// score
+	score = 0;
+	// initial state of movement.
+	currentDirection = Direction::Up;
+	nextDirection = Direction::Up;
 }

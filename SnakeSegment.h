@@ -20,13 +20,14 @@
 #define LIGHT_PURPLE 13
 #define LIGHT_YELLOW 14
 #define BRIGHT_WHITE 15
+#define DEFAULT		 11
 
 using namespace std;
 
 const int initialSize = 3;
-const int GameWidth = 40;
-const int GameHeight = 20;
 const int Speed = 100;
+const int consoleWidth = 120;
+const int consoleHeight = 30;
 
 const int left_board = 0;
 const int right_board = 80;
@@ -80,6 +81,12 @@ private:
 	Direction nextDirection;
 	bool isOver;
 	bool endGame;
+	int score;
+
+	std::vector<string> title;
+	std::vector<string> choice;
+	std::vector<string> high_score;
+	int line;
 public:
 	Game();
 	void drawBoard();
@@ -97,5 +104,7 @@ public:
 	void eraseObject();
 	void hideCursor();
 	void launch();
+	void drawMenu();
+	void initializeObject();
 };
 

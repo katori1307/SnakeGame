@@ -4,8 +4,12 @@ int main()
 {
 	SetConsoleTitle(L"Snake game");
 	Game g;
-	//g.run();
-	g.launch();
+	//g.launch();
+	while (1)
+	{
+		g.hideCursor();
+		g.drawBoard();
+	}
 	/*while (1)
 	{
 		if (_kbhit())
