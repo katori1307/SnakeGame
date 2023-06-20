@@ -36,9 +36,11 @@ const int left_score_board = right_board + 1;
 const int right_score_board = 119;
 
 
-const char* SnakeHead = u8"\u2593";
-const char* SnakeBody = u8"\u2588";
-const char* Food = u8"\u25BC";
+//const char* SnakeHead = u8"\u2593";
+//const char* SnakeBody = u8"\u2588";
+//const char* FoodSegment = u8"\u25BC";
+
+
 
 
 enum class Direction
@@ -92,7 +94,8 @@ public:
 	void textColor(int color);
 	void render();
 	void drawObject();
-
-
-
+	void eraseObject();
+	void hideCursor();
+	void launch();
 };
+
