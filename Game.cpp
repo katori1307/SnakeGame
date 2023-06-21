@@ -13,6 +13,7 @@ Game::Game()
 	// Game status;
 	this->isOver = false;
 	this->endGame = false;
+	this->isPause = false;
 	// create food;
 	this->food.generateFood();
 	//// draw object
@@ -21,7 +22,7 @@ Game::Game()
 	currentDirection = Direction::Up;
 	nextDirection = Direction::Up;
 	// score
-	score = 0;
+	this->score = 0;
 	// initial title and choices
 	title.push_back(",------.   ,---.  ,--.  ,--.     ,---.    ,---.  ,--.  ,--.    ,--.   ,--. ,-----. ,--. ");
 	title.push_back("|  .--. ' /  O  \\ |  ,'.|  |    '   .-'  /  O  \\ |  ,'.|  |    |   `.'   |'  .-.  '|  | ");
@@ -41,6 +42,12 @@ Game::Game()
 	high_score.push_back("  ___) | |__| |_| |  _ <| |___ ");
 	high_score.push_back(" |____/ \\____\\___/|_| \\_\\_____|");
 
+	playing_choice.push_back("P to pause");
+	playing_choice.push_back("Esc to exit");
+	playing_choice.push_back("S to save");
+	playing_choice.push_back("M to turn on/off the music");
+
+
 
 	line = 0;
 }
@@ -52,13 +59,15 @@ void Game::run()
 	drawBoard();
 	while (!isOver)
 	{
-		// 1: process input
+		// handle game pause;
+		game_pause();
+		// process input
 		processInput();
-		// 2: update direction, move snake, check collision
+		// update direction, move snake, check collision
 		update();
-		// 3: draw objects in game
+		// draw objects in game
 		render();
-		// 4: sleep (game's speed)
+		// sleep (game's speed)
 		Sleep(Speed);
 	}
 }
@@ -102,6 +111,22 @@ void Game::drawBoard()
 		gotoXY(x, 3 + i);
 		cout << high_score[i];
 	}
+	for (int i = left_score_cell; i < right_score_cell; i++)
+	{
+		gotoXY(i, 10);
+		cout << "-";
+		gotoXY(i, 12);
+		cout << "-";
+	}
+
+	
+	
+	x = left_score_board + ((right_score_board - left_score_board - playing_choice[3].size()) / 2);
+	for (int i = 0; i < playing_choice.size(); i++)
+	{
+		gotoXY(x, 18 + i);
+		cout << playing_choice[i];
+	}
 }
 
 void Game::gotoXY(int x, int y)
@@ -137,6 +162,12 @@ void Game::processInput()
 			break;
 		case 'D':
 			nextDirection = Direction::Right;
+			break;
+		case 'P':
+			if (isPause == false) isPause = true;
+			break;
+		case 27:
+			isOver = true;
 			break;
 		}
 	}
@@ -218,11 +249,13 @@ void Game::drawObject()
 
 void Game::render()
 {
-	// draw game board;
-	//drawBoard();
 	// draw snake, food
 	drawObject();
 	eraseObject();
+	// print score
+	string s = to_string(this->score);
+	gotoXY(left_score_cell + ((right_score_cell - left_score_cell - s.size()) / 2), 11);
+	cout << s;
 }
 
 void Game::update()
@@ -292,6 +325,7 @@ void Game::launch()
 				run();
 				break;
 
+
 			case 4:
 				endGame = true;
 				break;
@@ -331,7 +365,9 @@ void Game::drawMenu()
 void Game::initializeObject()
 {
 	isOver = false;
+	isPause = false;
 	line = 0;
+	score = 0;
 	drawMenu();
 	textColor(LIGHT_RED);
 	gotoXY((consoleWidth - choice[0].size()) / 2, 15);
@@ -349,4 +385,17 @@ void Game::initializeObject()
 	// initial state of movement.
 	currentDirection = Direction::Up;
 	nextDirection = Direction::Up;
+}
+
+void Game::game_pause()
+{
+	while (isPause)
+	{
+		if (_kbhit())
+		{
+			char input = toupper(_getch());
+			if (input == 'P') isPause = false;
+		}
+		else continue;
+	}
 }

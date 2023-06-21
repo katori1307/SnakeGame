@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <windows.h>
 #include <locale>
+#include <string>
 
 #define BLACK		 0
 #define BLUE		 1
@@ -35,6 +36,8 @@ const int top_board = 0;
 const int bottom_board = 29;
 const int left_score_board = right_board + 1;
 const int right_score_board = 119;
+const int left_score_cell = left_score_board + 10;
+const int right_score_cell = right_score_board - 10;
 
 
 //const char* SnakeHead = u8"\u2593";
@@ -81,11 +84,13 @@ private:
 	Direction nextDirection;
 	bool isOver;
 	bool endGame;
+	bool isPause;
 	int score;
-
+	
 	std::vector<string> title;
 	std::vector<string> choice;
 	std::vector<string> high_score;
+	std::vector<string> playing_choice;
 	int line;
 public:
 	Game();
@@ -106,5 +111,6 @@ public:
 	void launch();
 	void drawMenu();
 	void initializeObject();
+	void game_pause();
 };
 
