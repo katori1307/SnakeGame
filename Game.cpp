@@ -23,6 +23,8 @@ Game::Game()
 	nextDirection = Direction::Up;
 	// score
 	this->score = 0;
+	//speed
+	this->speed = Speed;
 	// initial title and choices
 	title.push_back(",------.   ,---.  ,--.  ,--.     ,---.    ,---.  ,--.  ,--.    ,--.   ,--. ,-----. ,--. ");
 	title.push_back("|  .--. ' /  O  \\ |  ,'.|  |    '   .-'  /  O  \\ |  ,'.|  |    |   `.'   |'  .-.  '|  | ");
@@ -31,7 +33,7 @@ Game::Game()
 	title.push_back("`--' '--'`--' `--'`--'  `--'    `-----' `--' `--'`--'  `--'    `--'   `--' `-----' `--' ");
 
 	choice.push_back("1. New game");
-	choice.push_back("2. Load game");
+	choice.push_back("2. Leader board");
 	choice.push_back("3. Settings");
 	choice.push_back("4. About me");
 	choice.push_back("5. Exit");
@@ -42,10 +44,18 @@ Game::Game()
 	high_score.push_back("  ___) | |__| |_| |  _ <| |___ ");
 	high_score.push_back(" |____/ \\____\\___/|_| \\_\\_____|");
 
-	playing_choice.push_back("P to pause");
+	playing_choice.push_back("P to pause/unpause");
 	playing_choice.push_back("Esc to exit");
-	playing_choice.push_back("S to save");
+	//playing_choice.push_back("S to save");
 	playing_choice.push_back("M to turn on/off the music");
+
+	settings.push_back(" ,---.           ,--.    ,--.  ,--.                       ");
+	settings.push_back("'   .-'  ,---. ,-'  '-.,-'  '-.`--',--,--,  ,---.  ,---.  ");
+	settings.push_back("`.  `-. | .-._:'-.  .-''-.  .-',--.|      \\| .-. |(  .-'  ");
+	settings.push_back(".-'    |\\   --.  |  |    |  |  |  ||  ||  |' '-' '.-'  `) ");
+	settings.push_back("`-----'  `----'  `--'    `--'  `--'`--''--'.`-  / `----'  ");
+	settings.push_back("                                           `---'          ");
+
 
 
 
@@ -68,7 +78,7 @@ void Game::run()
 		// draw objects in game
 		render();
 		// sleep (game's speed)
-		Sleep(Speed);
+		Sleep(this->speed);
 	}
 }
 
@@ -121,7 +131,7 @@ void Game::drawBoard()
 
 	
 	
-	x = left_score_board + ((right_score_board - left_score_board - playing_choice[3].size()) / 2);
+	x = left_score_board + ((right_score_board - left_score_board - playing_choice[playing_choice.size() - 1].size()) / 2);
 	for (int i = 0; i < playing_choice.size(); i++)
 	{
 		gotoXY(x, 18 + i);
@@ -169,6 +179,7 @@ void Game::processInput()
 		case 27:
 			isOver = true;
 			break;
+			
 		}
 	}
 	else
@@ -325,18 +336,50 @@ void Game::launch()
 				run();
 				break;
 
-
-			case 4:
+			case 2: // settings
+				system("cls");
+				handleSettings();
+				system("cls");
+				initializeObject();
+				continue;
+				break;
+			case 4: // exit
 				endGame = true;
 				break;
+			
 			}
 		}
 		if (isOver)
 		{
+			while (1)
+			{
+				string str = "Enter name: ";
+				string name;
+				int x = left_score_board + 3;
+				gotoXY(x, 25);
+				cout << "Save the highscore ? (Y/N)";
+				char input = toupper(_getch());
+				if (input == 'Y')
+				{
+					fstream file;
+					file.open("leaderboard.txt", ios::app);
+					gotoXY(x, 25);
+					cout << "                          ";
+					gotoXY(x, 25);
+					cout << str;
+					cin >> name;
+					file << name << " ";
+					file << this->score << endl;
+					break;
+				}
+				if (input == 'N')
+					break;
+			}
 			system("cls");
 			initializeObject();
 			continue;
 		}	
+
 	}	
 }
 
@@ -359,6 +402,8 @@ void Game::drawMenu()
 	cout << "Press E to interact";
 	gotoXY((consoleWidth - choice[0].size()) / 2, 26);
 	cout << "W, S to move";
+	gotoXY((consoleWidth - choice[0].size()) / 2, 27);
+	cout << "Go to settings to adjust speed and music";
 	
 }
 
@@ -385,6 +430,8 @@ void Game::initializeObject()
 	// initial state of movement.
 	currentDirection = Direction::Up;
 	nextDirection = Direction::Up;
+	// speed
+	this->speed = normalMode;
 }
 
 void Game::game_pause()
@@ -398,4 +445,138 @@ void Game::game_pause()
 		}
 		else continue;
 	}
+}
+
+void Game::handleSettings()
+{
+	textColor(DEFAULT);
+	// draw "SETTINGS"
+	int x = (consoleWidth - settings[0].size()) / 2;
+	vector<string> choices;
+	choices.push_back("1. Music");
+	choices.push_back("2. Game mode");
+	for (int i = 0; i < settings.size(); i++)
+	{
+		gotoXY(x, 3 + i);
+		cout << settings[i];
+	}
+	//draw board;
+	for (int i = 30; i < 90; i++)
+	{
+		gotoXY(i, 9);
+		cout << "-";
+		gotoXY(i, consoleHeight - 5);
+		cout << "-";
+	}
+	for (int i = 9; i < consoleHeight - 5; i++)
+	{
+		gotoXY(30, i);
+		cout << "|";
+		gotoXY(89, i);
+		cout << "|";
+	}
+	gotoXY(35, 11);
+	cout << "E to interact";
+	gotoXY(35, 12);
+	cout << "W, S to move";
+	gotoXY(35, 13);
+	cout << "Esc to exit";
+	for (int i = 0; i < choices.size(); i++)
+	{
+		gotoXY(35, 15 + i);
+		cout << choices[i];
+	}
+	int line = 0;
+	x = 35;
+	bool isDone = false;
+	gotoXY(35, 15);
+	textColor(LIGHT_RED);
+	cout << choices[line];
+	textColor(DEFAULT);
+	while (!isDone)
+	{
+		char input = toupper(_getch());
+		switch (input)
+		{
+		case 'W': case 'S':
+			textColor(DEFAULT);
+			gotoXY(35, line + 15);
+			cout << choices[line];
+			if (line == 0) line = 1;
+			else if (line == 1) line = 0;
+			textColor(LIGHT_RED);
+			gotoXY(35, line + 15);
+			cout << choices[line];
+			break;
+		case 'E':
+			switch (line)
+			{
+			case 0: // handle music
+				break;
+			case 1: // handle game mode
+				vector<string> mode;
+				mode.push_back("==> Easy");
+				mode.push_back("==> Normal");
+				mode.push_back("==> Extreme");
+				string savedChanges = "Saved changes!";
+				gotoXY(50, 16);
+				int index = 0;
+				bool gameModeDone = false;
+				textColor(LIGHT_PURPLE);
+				cout << mode[0];
+				while (!gameModeDone)
+				{
+					char input2 = toupper(_getch());
+					switch (input2)
+					{
+					case 'W':
+						gotoXY(50, 16);
+						cout << "           ";
+						
+						if (index == mode.size() - 1) index = 0;
+						else index++;
+
+						gotoXY(50, 16);
+						cout << mode[index];
+						break;
+					case 'S':
+						gotoXY(50, 16);
+						cout << "           ";
+
+						if (index == 0) index = mode.size() - 1;
+						else index--;
+
+						gotoXY(50, 16);
+						cout << mode[index];
+						break;
+					case 'E':
+						if (index == 0) this->speed = easyMode;
+						if (index == 1) this->speed = normalMode;
+						if (index == 2) this->speed = extremeMode;
+						gotoXY(35, 20);
+						textColor(LIGHT_RED);
+						for (int i = 0; i < savedChanges.size(); i++)
+						{
+							cout << savedChanges[i];
+							Sleep(10);
+						}
+						break;
+					case 27:
+						gameModeDone = true;
+						break;
+					}
+				}
+				break;
+			}
+		case 27:
+			isDone = true;
+			break;
+
+		}
+	}
+
+	
+
+
+
 }

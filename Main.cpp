@@ -7,8 +7,7 @@ int main()
 	g.launch();
 	/*while (1)
 	{
-		g.hideCursor();
-		g.drawBoard();
+		g.handleSettings();
 	}*/
 	/*while (1)
 	{

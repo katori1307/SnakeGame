@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <locale>
 #include <string>
+#include <fstream>
 
 #define BLACK		 0
 #define BLUE		 1
@@ -29,6 +30,9 @@ const int initialSize = 3;
 const int Speed = 100;
 const int consoleWidth = 120;
 const int consoleHeight = 30;
+const int easyMode = 300;
+const int normalMode = 100;
+const int extremeMode = 50;
 
 const int left_board = 0;
 const int right_board = 80;
@@ -86,11 +90,13 @@ private:
 	bool endGame;
 	bool isPause;
 	int score;
+	int speed;
 	
 	std::vector<string> title;
 	std::vector<string> choice;
 	std::vector<string> high_score;
 	std::vector<string> playing_choice;
+	std::vector<string> settings;
 	int line;
 public:
 	Game();
@@ -112,5 +118,6 @@ public:
 	void drawMenu();
 	void initializeObject();
 	void game_pause();
+	void handleSettings();
 };
 
