@@ -493,6 +493,12 @@ void Game::handleSettings()
 	textColor(LIGHT_RED);
 	cout << choices[line];
 	textColor(DEFAULT);
+
+	string savedChanges = "Saved changes!";
+	vector<string> mode;
+	int index = 0;
+	bool finishChanging = false;
+
 	while (!isDone)
 	{
 		char input = toupper(_getch());
@@ -509,22 +515,73 @@ void Game::handleSettings()
 			cout << choices[line];
 			break;
 		case 'E':
+			
 			switch (line)
 			{
 			case 0: // handle music
+				mode.clear();
+				mode.push_back("==> On");
+				mode.push_back("==> Off");
+				gotoXY(50, 15);
+				index = 0;
+				finishChanging = false;
+				textColor(LIGHT_GREEN);
+				cout << mode[0];
+				while (!finishChanging)
+				{
+					char input2 = toupper(_getch());
+					switch (input2)
+					{
+					case 'W': case 'S':
+						gotoXY(50, 15);
+						cout << "       ";
+						if (index == 0) index = 1;
+						else index = 0;
+						gotoXY(50, 15);
+						cout << mode[index];
+						break;
+					case 'E':
+						switch (index)
+						{
+						case 0:
+							// turn on the music
+							break;
+						case 1:
+							// turn off the music
+							break;
+						}
+						gotoXY(50, 15);
+						cout << "       ";
+						gotoXY(35, 20);
+						cout << "              ";
+						gotoXY(35, 20);
+						textColor(LIGHT_RED);
+						for (int i = 0; i < savedChanges.size(); i++)
+						{
+							cout << savedChanges[i];
+							Sleep(10);
+						}
+						finishChanging = true;
+						break;
+					case 27:
+						gotoXY(50, 15);
+						cout << "       ";
+						finishChanging = true;
+						break;
+					}
+				}
 				break;
 			case 1: // handle game mode
-				vector<string> mode;
+				mode.clear();
 				mode.push_back("==> Easy");
 				mode.push_back("==> Normal");
 				mode.push_back("==> Extreme");
-				string savedChanges = "Saved changes!";
 				gotoXY(50, 16);
-				int index = 0;
-				bool gameModeDone = false;
-				textColor(LIGHT_PURPLE);
+				index = 0;
+				finishChanging = false;
+				textColor(LIGHT_GREEN);
 				cout << mode[0];
-				while (!gameModeDone)
+				while (!finishChanging)
 				{
 					char input2 = toupper(_getch());
 					switch (input2)
@@ -535,7 +592,7 @@ void Game::handleSettings()
 						
 						if (index == mode.size() - 1) index = 0;
 						else index++;
-
+						textColor(LIGHT_GREEN);
 						gotoXY(50, 16);
 						cout << mode[index];
 						break;
@@ -545,7 +602,7 @@ void Game::handleSettings()
 
 						if (index == 0) index = mode.size() - 1;
 						else index--;
-
+						textColor(LIGHT_GREEN);
 						gotoXY(50, 16);
 						cout << mode[index];
 						break;
@@ -553,6 +610,10 @@ void Game::handleSettings()
 						if (index == 0) this->speed = easyMode;
 						if (index == 1) this->speed = normalMode;
 						if (index == 2) this->speed = extremeMode;
+						gotoXY(50, 16);
+						cout << "           ";
+						gotoXY(35, 20);
+						cout << "              ";
 						gotoXY(35, 20);
 						textColor(LIGHT_RED);
 						for (int i = 0; i < savedChanges.size(); i++)
@@ -560,14 +621,17 @@ void Game::handleSettings()
 							cout << savedChanges[i];
 							Sleep(10);
 						}
+						finishChanging = true;
 						break;
 					case 27:
-						gameModeDone = true;
+						gotoXY(50, 16);
+						cout << "           ";
+						finishChanging = true;
 						break;
 					}
 				}
-				break;
 			}
+			break;
 		case 27:
 			isDone = true;
 			break;
