@@ -119,5 +119,6 @@ public:
 	void initializeObject();
 	void game_pause();
 	void handleSettings();
+	void handleLeaderboard();
 };
 

@@ -296,6 +296,8 @@ void Game::hideCursor()
 
 void Game::launch()
 {
+	SetConsoleTitle(L"Snake game");
+	hideCursor();
 	initializeObject();
 	while (!endGame)
 	{
@@ -334,6 +336,12 @@ void Game::launch()
 			{
 			case 0: // new game
 				run();
+				break;
+			case 1:
+				system("cls");
+				handleLeaderboard();
+				system("cls");
+				initializeObject();
 				break;
 
 			case 2: // settings
@@ -431,7 +439,7 @@ void Game::initializeObject()
 	currentDirection = Direction::Up;
 	nextDirection = Direction::Up;
 	// speed
-	this->speed = normalMode;
+	//this->speed = normalMode;
 }
 
 void Game::game_pause()
@@ -638,9 +646,80 @@ void Game::handleSettings()
 
 		}
 	}
+}
 
+void Game::handleLeaderboard()
+{
+	int lbLeft = 40, lbRight = consoleWidth - 40;
+	int lbTop = 5, lbBottom = 25;
+	for (int i = lbLeft; i < lbRight; i++)
+	{
+		gotoXY(i, lbTop);
+		cout << "-";
+		gotoXY(i, lbBottom);
+		cout << "-";
+	}
+	for (int i = lbTop; i <= lbBottom; i++)
+	{
+		gotoXY(lbLeft, i);
+		cout << "|";
+		gotoXY(lbRight, i);
+		cout << "|";
+	}
+	for (int i = lbTop + 5; i <= lbBottom - 1; i++)
+	{
+		gotoXY((lbRight + lbLeft) / 2, i);
+		cout << "|";
+	}
+	string str = "LEADER BOARD";
+	gotoXY((consoleWidth - str.length()) / 2, lbTop + 2);
+	cout << str;
+	gotoXY(lbLeft + 5, lbTop + 4);
+	cout << "USERNAME";
+	gotoXY(lbRight - 13, lbTop + 4);
+	cout << "HIGHSCORE";
+
+	fstream file;
+	string line;
+	int space;
+	string name, temp;
+	int score;
+	vector<pair<string, int>> list;
+	file.open("leaderboard.txt");
+	if (!file.is_open())
+	{
+		system("cls");
+		gotoXY(consoleWidth / 2, 10);
+		cout << "CANNOT OPEN FILE";
+	}
+	while (getline(file, line))
+	{
+		//cin.ignore();
+		//getline(file, line);
+		space = line.find_last_of(' ');
+		name = line.substr(0, space);
+		temp = line.substr(space + 1);
+		score = std::stoi(temp);
+		list.push_back(make_pair(name, score));
+	}
+	for (int i = 0; i < list.size() - 1; i++)
+		for (int j = i + 1; j < list.size(); j++)
+		{
+			if (list[i].second < list[j].second)
+				std::swap(list[i], list[j]);
+		}
+	for (int i = 0; i < list.size(); i++)
+	{
+		gotoXY(lbLeft + 5, lbTop + 7 + i);
+		cout << list[i].first;
+		gotoXY(lbRight - 13, lbTop + 7 + i);
+		cout << list[i].second;
+	}
+	gotoXY(lbLeft + 10, lbBottom + 2);
+	cout << "Press Esc to go back";
+
+	while (1)
+		if (toupper(_getch()) == 27) break;
 	
-
-
-
+	
 }
